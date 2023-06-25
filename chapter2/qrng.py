@@ -7,10 +7,6 @@ from simulator import SingleQubitSimulator
 # 1 Ask QuantumDevice to allocate qubit
 # 2 Apply an instruction called the Hadamard instruction to the qubit; we learn about
 # 3 measure qubit
-# def qrug():
-#     q = Qubit()
-#     H(q)
-#     return measure(q)
 
 def qrng(device: QuantumDevice) -> bool:
     with device.using_qubit() as q:
