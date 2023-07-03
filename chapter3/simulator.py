@@ -1,9 +1,8 @@
-from chapter2.simulator import KET_0
+from interface import QuantumDevice, Qubit
 import numpy as np
 
 
-KEY_0 = np.array([[1], [0]])
-#KEY_y = np.array([[1], [0]])
+KET_0 = np.array([[1], [0]])
 
 H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2) # Hadamard operation
 
@@ -26,4 +25,14 @@ class SimulatedQubit(Qubit):
     
     def reset(self):
         self.state = KET_0.copy() 
+
+class SingleQubitSimulator(QuantumDevice):
+    available_qubits = [SimulatedQubit()]
+
+    def allocate_qubit(self) -> SimulatedQubit:
+        if self.available_qubits:
+            return self.available_qubits.pop()
+
+    def deallocate_qubit(self, qubit: SimulatedQubit):
+        self.available_qubits.append(qubit)
     

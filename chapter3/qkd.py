@@ -1,7 +1,6 @@
-from http.cookies import BaseCookie
-from unittest import result
 from interface import QuantumDevice, Qubit
 from simulator import SingleQubitSimulator
+
 
 def prepare_classical_message(bit: bool, q: Qubit) -> None:
     if bit:      #If we are sending 1, we can use the NOT Operation x.(rotating |0⟩ to |1⟩)
@@ -43,3 +42,14 @@ def send_classical_bit_wrong_basis(device: QuantumDevice, bit: bool) -> None:
         result = eve_measure_plusminus(q)
         assert result == bit, "Two parties do not have the same bit value"
 
+
+def qrng(device: QuantumDevice) -> bool:
+    with device.using_qubit() as q:
+        q.h()
+        return q.measure()
+
+if __name__ == "__main__":
+    qsim = SingleQubitSimulator()
+    for idx_sample in range(10):
+        random_sample = qrng(qsim)
+        print(f"Our QRNG returned {random_sample}.")
