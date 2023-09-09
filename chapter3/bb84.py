@@ -1,6 +1,7 @@
-from unittest import result
+from email import message
 from simulator import SingleQubitSimulator
 from interface import QuantumDevice, Qubit
+from typing import List
 
 
 # helper functions before the key exchange
@@ -13,46 +14,44 @@ def sample_random_bit(device: QuantumDevice) -> bool:
     return result
 
 def prepare_message_qubit(message: bool, basis: bool, q: Qubit) -> None:  #The qubit is encoded with the key bit value in the randomly selected basis.
-    if message:
-        q.x()   # メッセージの時は、X演算を適用
-    if basis:   # 基底の時は、ハダマード演算を適用
+    if message: # メッセージが1 : X演算を適用
+        q.x()   
+    if basis:   # 基底が1 : ハダマード演算を適用
         q.h()  
 
 def measure_message_qubit(basis: bool, q: Qubit) -> bool:
-    if basis:
+    if basis:  # 基底が1 : ハダマード演算を適用
         q.h()
+    
     result = q.measure()
     q.reset()
     return result
 
 def convert_to_hex(bits: List[bool]) -> str:
-    return hex(int (
-        "".join(["1" if bit else "0" for bit in bits]),
-        2
-    ))
+    return hex(int("".join(["1" if bit else "0" for bit in bits]), 2))
 
 # BB84 protocol for sending a classical bit
 
-def send_single_bit_with_bb84 (
+def send_single_bit_with_bb84(
     your_device: QuantumDevice,
     eve_device: QuantumDevice
-) -> tuple:
+    ) -> tuple:
 
     [your_message, your_basis] = [
         sample_random_bit(your_device) for _ in range(2)
     ]
-    eve_basis = sample_random_bit(eve_device)
+
+    eve_basis = (eve_device)
 
     with your_device.using_qubit() as q:
         prepare_message_qubit(your_message, your_basis, q)
 
-    # Qubit sending
+        # QUBIT SENDING...
 
-    eve_result = measure_message_qubit(eve_basis, q)
-
-
-    # Returns the key bit values and bases we and Eve would have at the end of this one round
+        eve_result = measure_message_qubit(eve_basis, q)
+    # Returns the key bit values and basis we and Eve would have at the end of this one round
     return ((your_message, your_basis), (eve_result, eve_basis))
+
 
 def simulate_bb84(n_bits: int) -> list:
     your_device = SingleQubitSimulator()
@@ -99,11 +98,14 @@ if __name__ == "__main__":
         1, 1, 0, 1, 1, 1, 0, 0,
         1, 0, 1, 1, 1, 0, 1, 1
     ]
+    
+
+    # message = 
     print(f"Using key to send secret message: {convert_to_hex(message)}.")
 
     encrypted_message = apply_one_time_pad(message, key)
     print(f"Encrypted message:                {convert_to_hex(encrypted_message)}.")
 
     decrypted_message = apply_one_time_pad(encrypted_message, key)
-    print(f"Eve decrypted to get:             {convert_to_hex(decrypted_message)}.")
+    print(f"Bob decrypted to get:             {convert_to_hex(decrypted_message)}.")
      

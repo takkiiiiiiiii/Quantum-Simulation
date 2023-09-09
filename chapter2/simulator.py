@@ -1,7 +1,7 @@
 from interface import QuantumDevice, Qubit
 import numpy as np
 
-KET_0 = np.array([[1],[0]], dtype=complex) # [[1],[0]] = |0⟩  (Since we’ll be using |0⟩ a lot in our simulator)
+KET_0 = np.array([[1],[0]], dtype=complex) # |0⟩ = [[1],[0]]  (Since we’ll be using |0⟩ a lot in our simulator)
 H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2) # Hadamard operation
 
 class SimulatedQubit(Qubit):
@@ -13,7 +13,8 @@ class SimulatedQubit(Qubit):
 
     def measure(self) -> bool:
         pr0 = np.abs(self.state[0, 0]) ** 2
-        sample = np.random.random() <= pr0 # generate a random number between 0 and 1 using np.random.random and check whether it’s less than pr0.
+        # print(pr0)
+        sample = np.random.random() <= pr0  # Generate a random number between 0 and 1 using np.random.random and check whether it’s less than pr0. 0が出てくる確率
         return bool(0 if sample else 1)
 
     def reset(self):
